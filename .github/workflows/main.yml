@@ -25,6 +25,7 @@ jobs:
     tests:
       needs: [build]
       uses: AmavelAntonio/desafio-cicd-devopsPro/.github/workflows/tests.yaml@main
+      secrets: inherit
 
     release:
          name: making release project
