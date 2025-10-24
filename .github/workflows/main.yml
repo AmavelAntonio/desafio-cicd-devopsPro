@@ -43,4 +43,4 @@ jobs:
                 file: src/Review-Filmes.Test.EndToEnd/Dockerfile
                 tags: |
                     ${{secrets.DOCKERHUB_USERNAME}}/project-devops-pro:latest
-                    ${{ secrets.DOCKERHUB_USERNAME}}//project-devops-pro:${{github.run_number}}
+                    ${{ secrets.DOCKERHUB_USERNAME}}/project-devops-pro:${{github.run_number}}
