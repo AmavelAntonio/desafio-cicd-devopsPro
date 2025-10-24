@@ -1,5 +1,5 @@
 name: Pipeline CI/CD
-run-name: Worflow did build by ${{ github.actor }} 
+run-name: Build by ${{ github.actor }} 
 
 
 on:
@@ -22,11 +22,14 @@ jobs:
             - name: Run build command
               working-directory: ./src
               run: dotnet build Review-Filmes.sln
+    tests:
+      needs: [build]
+      uses: /AmavelAntonio/desafio-cicd-devopsPro/.github/workflows/tests.yaml
 
     release:
          name: making release project
          runs-on: ubuntu-latest
-         needs: [build]
+         needs: [tests]
          steps:
             - name: Getting project code
               uses: actions/checkout@v4
