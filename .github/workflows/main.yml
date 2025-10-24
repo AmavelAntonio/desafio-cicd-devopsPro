@@ -24,7 +24,7 @@ jobs:
               run: dotnet build Review-Filmes.sln
     tests:
       needs: [build]
-      uses: AmavelAntonio/desafio-cicd-devopsPro/.github/workflows/tests.yaml
+      uses: AmavelAntonio/desafio-cicd-devopsPro/.github/workflows/tests.yaml@main
 
     release:
          name: making release project
