@@ -1,19 +1,49 @@
 name: Running tests
 
 on: 
-    workflow_call:
+  workflow_call:
 
 jobs:
-    unit-test:
-        name: Unit Test
-        runs-on: ubuntu-latest
-        steps:
-            - name: getting code of project
-              uses: actions/checkout@v4
-            - name: Setup dotnet
-              uses: actions/setup-dotnet@v4
-              with:
-                dotnet-version: "8.0.300"
-            - name: Running Unit Tests
-              working-directory: ./src
-              run: dotnet test ./Review-Filmes.Test.Unit/Review-Filmes.Test.Unit.csproj
+  unit-test:
+    name: Unit Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Getting project code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.300"
+
+      - name: Running Unit Tests
+        working-directory: ./src
+        run: dotnet test ./Review-Filmes.Test.Unit/Review-Filmes.Test.Unit.csproj
+
+  integration-tests:
+    name: Integration Test
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: review
+          POSTGRES_PASSWORD: postgrespwd
+          POSTGRES_DB: review-filmes
+
+    steps:
+      - name: Getting project code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.300"
+
+      - name: Running Integration Tests
+        working-directory: ./src
+        run: dotnet test ./Review-Filmes.Test.Integration/Review-Filmes.Test.Integration.csproj
+        env:
+          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=review-filmes;Username=review;Password=postgrespwd"
