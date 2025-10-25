@@ -1,0 +1,32 @@
+name: Deploy on kubernetes
+on:
+    workflow_call:
+
+
+jobs:
+    deploy:
+        name: "Deploy"
+        runs-on: Ubuntu-latest
+        steps:
+            - name: Getting code
+              uses: actions/checkout@v4
+
+            - name: context config
+              uses: azure/k8s-set-context@v4
+              with:
+                method: kubeconfig
+                kubeconfig: ${{ secrets.K8S_CONFIG }}
+            
+            - name: Deploy on Kubernentes
+              uses: Azure/k8s-deploy@v5
+              with:
+                resource-group: yourResourceGroup
+                name: yourClusterName
+                action: deploy
+                strategy: basic
+
+                private-cluster: true
+                manifests: |
+                    k8s/deployment.yaml
+                images: |
+                    ${{ secrets.DOCKERHUB_USERNAME}}/project-devops-pro:${{github.run_number}}
