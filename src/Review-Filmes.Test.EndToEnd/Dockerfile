@@ -4,23 +4,21 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0
 # Definir shell com 'pipefail' para capturar falhas em pipes
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# Instalar dependências com versões fixadas e limpar caches
+# Instalar dependências com versões fixadas dinamicamente e limpar caches
 RUN apt-get update -y && \
-    apt-get install -y --no-install-recommends \
-        wget=1.21.2-2ubuntu1 \
-        xvfb=2:21.1.4-2ubuntu1.7 \
-        unzip=6.0-26ubuntu3.1 \
-        gnupg2=2.2.27-3ubuntu2.1 \
-        curl=7.81.0-1ubuntu1.16 && \
+    apt-get install -y --no-install-recommends apt-utils && \
+    for pkg in wget xvfb unzip gnupg2 curl; do \
+        ver=$(apt-cache madison $pkg | head -1 | awk '{print $3}'); \
+        apt-get install -y --no-install-recommends ${pkg}=${ver}; \
+    done && \
     rm -rf /var/lib/apt/lists/*
 
 # Configurar o repositório do Google Chrome e instalar a versão estável
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
     echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list && \
     apt-get update -y && \
-    apt-get install -y --no-install-recommends \
-        google-chrome-stable=126.0.6478.126-1 \
-        curl=7.81.0-1ubuntu1.16 && \
+    ver=$(apt-cache madison google-chrome-stable | grep 126.0.6478.126-1 | head -1 | awk '{print $3}') && \
+    apt-get install -y --no-install-recommends google-chrome-stable=${ver} && \
     rm -rf /var/lib/apt/lists/*
 
 # Definir variáveis de ambiente para o Chromedriver
