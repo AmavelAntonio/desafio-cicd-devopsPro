@@ -29,7 +29,6 @@ jobs:
                 action: deploy
                 strategy: basic
 
-                private-cluster: true
                 manifests: |
                     k8s/deployment.yaml
                 images: |
