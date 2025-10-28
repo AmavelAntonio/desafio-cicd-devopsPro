@@ -1,32 +1,25 @@
-# Stage 1: Build e Publish
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /src
+#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-# Copiar csproj e restaurar dependências
-COPY ["Review-Filmes.Web/Review-Filmes.Web.csproj", "Review-Filmes.Web/"]
-COPY ["Review-Filmes.Domain/Review-Filmes.Domain.csproj", "Review-Filmes.Domain/"]
-RUN dotnet restore "Review-Filmes.Web/Review-Filmes.Web.csproj"
-
-# Copiar código completo
-COPY . .
-
-# Publicar a aplicação no caminho fixo /publish
-WORKDIR "/src/Review-Filmes.Web"
-RUN dotnet publish "Review-Filmes.Web.csproj" -c Release -o /publish /p:UseAppHost=false
-
-# Stage 2: Runtime
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
-WORKDIR /app
-
-# Copiar arquivos publicados do estágio build
-COPY --from=build /publish .
-
-# Garantir permissões para usuário não-root
-RUN useradd -m app && chown -R app:app /app
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
-
-# Configurações do container
-ENV ASPNETCORE_URLS=http://+:8080
+WORKDIR /app
 EXPOSE 8080
 
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+COPY ["Review-Filmes.Web/Review-Filmes.Web.csproj", "Review-Filmes.Web/"]
+COPY ["Review-Filmes.Domain/Review-Filmes.Domain.csproj", "Review-Filmes.Domain/"]
+RUN dotnet restore "./Review-Filmes.Web/Review-Filmes.Web.csproj"
+COPY . .
+WORKDIR "/src/Review-Filmes.Web"
+RUN dotnet build "./Review-Filmes.Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./Review-Filmes.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Review-Filmes.Web.dll"]
