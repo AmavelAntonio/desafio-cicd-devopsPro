@@ -13,11 +13,11 @@ COPY ["Review-Filmes.Domain/Review-Filmes.Domain.csproj", "Review-Filmes.Domain/
 RUN dotnet restore "./Review-Filmes.Web/Review-Filmes.Web.csproj"
 COPY . .
 WORKDIR "/src/Review-Filmes.Web"
-RUN dotnet build "./Review-Filmes.Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./Review-Filmes.Web.csproj" -c "$BUILD_CONFIGURATION" -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Review-Filmes.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./Review-Filmes.Web.csproj" -c "$BUILD_CONFIGURATION" -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
