@@ -74,3 +74,15 @@ jobs:
       needs: [release]
       uses: AmavelAntonio/desafio-cicd-devopsPro/.github/workflows/deploy.yaml@main
       secrets: inherit
+      with:
+        enviroment-name: homolog
+        enviroment-url: http://homolog.amavelantonio.com
+
+
+    deploy-producao:
+      needs: [release]
+      uses: AmavelAntonio/desafio-cicd-devopsPro/.github/workflows/deploy.yaml@main
+      secrets: inherit
+      with:
+        enviroment-name: producao
+        enviroment-url: http://producao.amavelantonio.com
