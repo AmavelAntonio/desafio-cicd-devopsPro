@@ -32,7 +32,7 @@ jobs:
                 kubeconfig: ${{ secrets.K8S_CONFIG }}
             
             - name: Update Deployment
-              run: "sed -i 's/hoost: homolog.amavelantonio.com/host: ${{ vars.BASE_URL }}/g' k8s/deployment.yaml"
+              run: "sed -i 's/host: homolog.amavelantonio.com/host: ${{ vars.BASE_URL }}/g' k8s/deployment.yaml"
 
             - name: Deploy on Kubernentes
               uses: Azure/k8s-deploy@v5
