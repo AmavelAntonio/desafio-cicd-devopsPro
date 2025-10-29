@@ -78,9 +78,24 @@ jobs:
         enviroment-name: homolog
         enviroment-url: http://homolog.amavelantonio.com
 
+    teste-e2e:
+      name: Test End to End
+      runs-on: ubuntu-latest
+      needs: [deploy-homolog]
+      environment: 
+        name: homolog
+      container:
+        image: fabricioveronez/webdriver-dotnet:chrome
+        env:
+          BASE_URL: "http://${{ vars.BASE_URL }}"
+      steps:
+        - name: Getting code of project
+          uses: actions/checkout@v4
+        - name: Run test end to end
+          uses: dotnet test ./src/Review-Filmes.Test.EndToEnd/Review-Filmes.Test.EndToEnd.csproj
 
     deploy-producao:
-      needs: [release]
+      needs: [teste-e2e]
       uses: AmavelAntonio/desafio-cicd-devopsPro/.github/workflows/deploy.yaml@main
       secrets: inherit
       with:
